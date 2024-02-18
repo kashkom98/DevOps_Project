@@ -1,7 +1,12 @@
+
+
 provider "aws" {
     region = "us-east-1"
 }
 
+resource "aws_vpc" "test" {
+  cidr_block = "10.0.0.0/16"
+}
 resource "aws_instance" "demo-server" {
     ami = "ami-0277155c3f0ab2930"
     instance_type = "t2.micro"
@@ -72,18 +77,18 @@ resource "aws_internet_gateway" "dpp-igw" {
 
 resource "aws_route_table" "dpp-public-rt" {
     vpc_id = aws_vpc.dpp-vpc.id
-    route = {
+    route {
         cidr_block = "0.0.0.0/0"
         gateway_id = aws_internet_gateway.dpp-igw.id
     }
 }
 
 resource "aws_route_table_association" "dpp-rta-public-subnet-01" {
-    subnet_id = aws_subnet.dpp-public-subnet-01
+    subnet_id = aws_subnet.dpp-public-subnet-01.id
     route_table_id = aws_route_table.dpp-public-rt.id 
 }
 
 resource "aws_route_table_association" "dpp-rta-public-subnet-02" {
-    subnet_id = aws_subnet.dpp-public-subnet-02
+    subnet_id = aws_subnet.dpp-public-subnet-02.id
     route_table_id = aws_route_table.dpp-public-rt.id 
 }
