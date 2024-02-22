@@ -1,18 +1,34 @@
-
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "5.37.0"
+    }
+  }
+}
 
 provider "aws" {
     region = "us-east-1"
 }
 
-resource "aws_vpc" "test" {
-  cidr_block = "10.0.0.0/16"
+resource "aws_vpc" "dpp-vpc" {
+    cidr_block = "10.1.0.0/16"
+    tags = {
+        Name = "MyVPC"
+    }
 }
 resource "aws_instance" "demo-server" {
     ami = "ami-0277155c3f0ab2930"
     instance_type = "t2.micro"
     key_name = "kashkom"
-    security_groups = ["demo-sg"]
+    //security_groups = ["demo-sg"]
+    vpc_security_group_ids = [ aws_security_group.demo-sg.id ]
     subnet_id = aws_subnet.dpp-public-subnet-01.id
+    for_each = toset( ["Jenkins-master", "build-slave", "ansible"] )
+    tags = {
+        Name = "${each.key}"
+    }
+
 }
 
 resource "aws_security_group" "demo-sg" {
@@ -41,12 +57,7 @@ resource "aws_security_group" "demo-sg" {
     }
 }
 
-resource "aws_vpc" "dpp-vpc" {
-    cidr_block = "10.1.0.0/16"
-    tags = {
-        Name = "dpp-vpc"
-    }
-}
+
 
 resource "aws_subnet" "dpp-public-subnet-01" {
     vpc_id = aws_vpc.dpp-vpc.id
