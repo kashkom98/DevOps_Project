@@ -18,7 +18,7 @@ resource "aws_vpc" "dpp-vpc" {
     }
 }
 resource "aws_instance" "demo-server" {
-    ami = "ami-0277155c3f0ab2930"
+    ami = "ami-0c7217cdde317cfec"
     instance_type = "t2.micro"
     key_name = "kashkom"
     //security_groups = ["demo-sg"]
